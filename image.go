@@ -245,7 +245,7 @@ func (i *Image) WriteImage(path string) error {
 	return nil
 }
 
-// PreserveEXIF preserves the metadata from the image, the metadata might contains GPS location or senstive data, be caution.
+// PreserveEXIF preserves the metadata from the image, the metadata might contains GPS location or sensitive data, be caution.
 //
 // NOTE: Requires exiftool to be installed. The function does nothing if "exiftool" command was not found.
 func (i *Image) PreserveEXIF() *Image {
