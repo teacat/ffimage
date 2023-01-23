@@ -98,7 +98,7 @@ ResizeImage scales the size of an image to the given dimensions. The other param
 | :-------------------------------------------: | :---------------------------------------------: | :--------------------------------: |
 |            `ResizeImage(300, 300)`            |              `ResizeImage(300, 0)`              |       `ResizeImage(0, 300)`        |
 | ![](./test/output/resize-300x300-upscale.png) | ![](./test/output/resize-300x300-downscale.png) |                                    |
-|       `ResizeImage(300, 300, Upscale)`        |        `ResizeImage(300, 0, Downscale)`         |                                    |
+|       `ResizeImage(300, 300, Upscale)`        |       `ResizeImage(300, 300, Downscale)`        |                                    |
 
 ### `ExtentImage(w, h, x, y int, pos ...PositionType)`
 
