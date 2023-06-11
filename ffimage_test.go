@@ -424,6 +424,28 @@ func TestSetImageFramerate(test *testing.T) {
 	a.Equal(96, img.GetHeight())
 }
 
+func TestGetFrames(test *testing.T) {
+	a := assert.New(test)
+	img := newImage(a, "source.gif")
+	a.Equal(60, img.GetFrames())
+
+	img = newImage(a, "source.jpg")
+	a.Equal(0, img.GetFrames())
+}
+
+func TestDropFrames(test *testing.T) {
+	a := assert.New(test)
+	img, output := newImage(a, "source.gif"), newOutput("drop-frame.gif")
+
+	err := img.DropFrames().WriteImage(output)
+	a.NoError(err)
+
+	img, err = NewImage(output)
+	a.NoError(err)
+
+	a.Equal(1, img.GetFrames())
+}
+
 func TestPNGConvertion(test *testing.T) {
 	a := assert.New(test)
 	img, output := newImage(a, "source.png"), newOutput("png-to-jpg.jpg")

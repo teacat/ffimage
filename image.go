@@ -5,9 +5,19 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	ffmpeg "github.com/u2takey/ffmpeg-go"
 )
+
+// GetFrames returns the frame count of the image, returns 0 if it's not an animated image.
+func (i *Image) GetFrames() int {
+	frames, err := strconv.Atoi(i.Stream.NbFrames)
+	if err != nil {
+		frames = 0
+	}
+	return frames
+}
 
 // GetWidth returns the width of the image.
 func (i *Image) GetWidth() int {
@@ -148,6 +158,12 @@ func (i *Image) SetImageFramerate(fps int) *Image {
 	// avg_frame_rate=438750/14777
 	// i.addFilter("fps", ffmpeg.Args{fmt.Sprintf("%d", fps)})
 	i.addArg(ffmpeg.KwArgs{"r": fmt.Sprintf("%d", fps)})
+	return i
+}
+
+// DropFrames makes any animated images to static image by specifing `-vframes 1`.
+func (i *Image) DropFrames() *Image {
+	i.addArg(ffmpeg.KwArgs{"vframes": 1})
 	return i
 }
 

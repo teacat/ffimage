@@ -79,6 +79,8 @@ $ sudo apt install -y libimage-exiftool-perl
 -   `FlopImage()`
 -   `SetBackgroundColor(color string)`
 -   `SetLoop(count int)`
+-   `DropFrames()`
+-   `GetFrames() int`
 -   `SetQuality(quality int)`
 -   `SetImageFramerate(fps int)`
 -   `SetImageFormat(format ImageFormat)`
