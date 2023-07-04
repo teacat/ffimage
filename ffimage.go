@@ -65,6 +65,7 @@ type Image struct {
 	Height int
 	Path   string
 	Output *Output
+	Silent bool
 }
 
 type Output struct {
@@ -89,6 +90,7 @@ func NewImage(path string) (*Image, error) {
 			Args:            make([]ffmpeg.KwArgs, 0),
 			Filters:         make([]*filter, 0),
 		},
+		Silent: true,
 	}
 	if err := image.loadImageSize(); err != nil {
 		return nil, err

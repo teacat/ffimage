@@ -244,7 +244,7 @@ func (i *Image) WriteImage(path string) error {
 			split1, split2.Filter("palettegen", ffmpeg.Args{})}, "paletteuse", ffmpeg.Args{})
 	}
 
-	err := input.Output(path, i.Output.Args...).OverWriteOutput().ErrorToStdOut().Run()
+	err := input.Output(path, i.Output.Args...).OverWriteOutput().Silent(i.Silent).Run() // .ErrorToStdOut()
 	if err != nil {
 		return err
 	}
