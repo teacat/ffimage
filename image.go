@@ -1,6 +1,7 @@
 package ffimage
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"os"
@@ -244,9 +245,10 @@ func (i *Image) WriteImage(path string) error {
 			split1, split2.Filter("palettegen", ffmpeg.Args{})}, "paletteuse", ffmpeg.Args{})
 	}
 
-	err := input.Output(path, i.Output.Args...).OverWriteOutput().Silent(i.Silent).Run() // .ErrorToStdOut()
+	buf := bytes.NewBuffer(nil)
+	err := input.Output(path, i.Output.Args...).OverWriteOutput().Silent(i.Silent).WithErrorOutput(buf).Run()
 	if err != nil {
-		return err
+		return errors.New(buf.String())
 	}
 
 	if isSameInputOutput {
