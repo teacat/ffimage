@@ -176,6 +176,10 @@ func (i *Image) DropFrames() *Image {
 
 // SetImageFormat sets the output format and automatically decides the codec. Format will be detect automatically from the output filename if it wasn't been setted.
 func (i *Image) SetImageFormat(format ImageFormat) *Image {
+	switch format {
+	case ImageFormatJPEG, ImageFormatPNG, ImageFormatBMP:
+		i.DropFrames()
+	}
 	i.Output.Format = format
 	return i
 }
