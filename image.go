@@ -47,8 +47,14 @@ func (i *Image) ResizeImage(w, h int, typ ...ResizeType) *Image {
 		return i
 	}
 	if len(typ) == 1 && typ[0] != ResizeTypeNone {
-		if w == 0 || h == 0 {
-			return i
+		// if w == 0 || h == 0 {
+		// 	return i
+		// }
+		if w == 0 && h != 0 {
+			w = h
+		}
+		if h == 0 && w != 0 {
+			h = w
 		}
 		w, h = i.calcBestfit(i.Width, i.Height, w, h, typ[0])
 
