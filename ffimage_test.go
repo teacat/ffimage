@@ -475,22 +475,22 @@ func TestPNGConvertion(test *testing.T) {
 	img, err = NewImage(output)
 	a.NoError(err)
 
-	a.Equal(300, img.GetWidth())
-	a.Equal(300, img.GetHeight())
+	a.Equal(431, img.GetWidth())
+	a.Equal(324, img.GetHeight())
 }
 
 func TestGIFConvertion(test *testing.T) {
 	a := assert.New(test)
 	img, output := newImage(a, "source.gif"), newOutput("gif-to-jpg.jpg")
-	err := img.SetImageFormat(ImageFormatJPEG).WriteImage(output)
+	err := img.SetImageFormat(ImageFormatJPEG).DropFrames().WriteImage(output)
 	a.NoError(err)
 
 	img, output = newImage(a, "source.gif"), newOutput("gif-to-png.png")
-	err = img.SetImageFormat(ImageFormatPNG).WriteImage(output)
+	err = img.SetImageFormat(ImageFormatPNG).DropFrames().WriteImage(output)
 	a.NoError(err)
 
 	img, output = newImage(a, "source.gif"), newOutput("gif-to-bmp.bmp")
-	err = img.SetImageFormat(ImageFormatBMP).WriteImage(output)
+	err = img.SetImageFormat(ImageFormatBMP).DropFrames().WriteImage(output)
 	a.NoError(err)
 
 	img, output = newImage(a, "source.gif"), newOutput("gif-to-avif.avif")
@@ -508,6 +508,6 @@ func TestGIFConvertion(test *testing.T) {
 	img, err = NewImage(output)
 	a.NoError(err)
 
-	a.Equal(300, img.GetWidth())
-	a.Equal(300, img.GetHeight())
+	a.Equal(96, img.GetWidth())
+	a.Equal(96, img.GetHeight())
 }
