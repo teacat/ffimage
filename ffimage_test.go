@@ -164,7 +164,7 @@ func TestExtentImageSmaller(test *testing.T) {
 	err := img.ExtentImage(100, 100, 0, 0).WriteImage(output)
 	a.Error(err)
 
-	img, err = NewImage(output)
+	_, err = NewImage(output)
 	a.Error(err)
 }
 
@@ -275,7 +275,7 @@ func TestCropImageLarger(test *testing.T) {
 	err := img.CropImage(768, 768, 0, 0, PositionTypeCenter).WriteImage(output)
 	a.Error(err)
 
-	img, err = NewImage(output)
+	_, err = NewImage(output)
 	a.Error(err)
 }
 
@@ -510,4 +510,26 @@ func TestGIFConvertion(test *testing.T) {
 
 	a.Equal(96, img.GetWidth())
 	a.Equal(96, img.GetHeight())
+}
+
+func TestNewImageFromBytes(test *testing.T) {
+	a := assert.New(test)
+
+	data, err := os.ReadFile("./test/source.png")
+	a.NoError(err)
+
+	img, err := NewImageFromBytes(data)
+	a.NoError(err)
+
+	a.Equal(431, img.GetWidth())
+	a.Equal(324, img.GetHeight())
+
+	output := newOutput("from-bytes.png")
+	err = img.ResizeImage(200, 200).WriteImage(output)
+	a.NoError(err)
+
+	img2, err := NewImage(output)
+	a.NoError(err)
+	a.Equal(200, img2.GetWidth())
+	a.Equal(200, img2.GetHeight())
 }

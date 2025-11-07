@@ -2,7 +2,6 @@ package ffimage
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -222,7 +221,7 @@ func (i *Image) WriteImage(path string) error {
 	}
 
 	if i.Output.Format == ImageFormatUnknown {
-		return errors.New("no image format")
+		return fmt.Errorf("unknown output format")
 	}
 
 	i.buildQuality()
@@ -234,7 +233,7 @@ func (i *Image) WriteImage(path string) error {
 	if isSameInputOutput {
 		tmpFile, err := os.CreateTemp("", "*"+filepath.Ext(i.Path))
 		if err != nil {
-			return err
+			return fmt.Errorf("create temp: %w", err)
 		}
 		tmpFile.Close()
 		tmpFilename = tmpFile.Name()
@@ -258,18 +257,23 @@ func (i *Image) WriteImage(path string) error {
 	buf := bytes.NewBuffer(nil)
 	err := input.Output(path, i.Output.Args...).OverWriteOutput().Silent(i.Silent).WithErrorOutput(buf).Run()
 	if err != nil {
-		return errors.New(buf.String())
+		return fmt.Errorf("ffmpeg output: %s", buf.String())
 	}
 
 	if isSameInputOutput {
 		if err := os.Rename(tmpFilename, path); err != nil {
-			return err
+			return fmt.Errorf("rename: %w", err)
 		}
 	}
 
 	i.buildAfterQuality()
 	i.buildAfterEXIF()
 
+	if i.isTemp {
+		if err := os.Remove(i.Path); err != nil {
+			return fmt.Errorf("remove: %w", err)
+		}
+	}
 	return nil
 }
 

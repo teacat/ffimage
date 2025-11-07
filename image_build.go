@@ -74,7 +74,7 @@ func (i *Image) buildBeforeEXIF() *Image {
 	if err != nil {
 		return i
 	}
-	j := make([]map[string]interface{}, 0)
+	j := make([]map[string]any, 0)
 	if err := json.Unmarshal(b, &j); err != nil {
 		return i
 	}

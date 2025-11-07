@@ -2,9 +2,11 @@ package ffimage
 
 import (
 	"context"
-	"errors"
+	"fmt"
 	"math"
+	"os"
 
+	"github.com/gabriel-vasile/mimetype"
 	ffmpeg "github.com/u2takey/ffmpeg-go"
 	"gopkg.in/vansante/go-ffprobe.v2"
 )
@@ -66,6 +68,7 @@ type Image struct {
 	Path   string
 	Output *Output
 	Silent bool
+	isTemp bool
 }
 
 type Output struct {
@@ -93,21 +96,42 @@ func NewImage(path string) (*Image, error) {
 		Silent: true,
 	}
 	if err := image.loadImageSize(); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("load image size: %w", err)
 	}
 	image.addArg(ffmpeg.KwArgs{"map_metadata": "-1"})
 	image.addFilter("format", ffmpeg.Args{"rgba"})
 	return image, nil
 }
 
+func NewImageFromBytes(data []byte) (*Image, error) {
+	mtype := mimetype.Detect(data)
+	tmpFile, err := os.CreateTemp("", "ffimage.*."+mtype.Extension())
+	if err != nil {
+		return nil, fmt.Errorf("create temp: %w", err)
+	}
+	if _, err := tmpFile.Write(data); err != nil {
+		return nil, fmt.Errorf("write: %w", err)
+	}
+	if err := tmpFile.Close(); err != nil {
+		return nil, fmt.Errorf("close: %w", err)
+	}
+	img, err := NewImage(tmpFile.Name())
+	if err != nil {
+		return nil, fmt.Errorf("new image: %w", err)
+	}
+	img.isTemp = true
+
+	return img, nil
+}
+
 // loadImageSize
 func (i *Image) loadImageSize() error {
 	data, err := ffprobe.ProbeURL(context.TODO(), i.Path)
 	if err != nil {
-		return err
+		return fmt.Errorf("probe url: %w", err)
 	}
 	if len(data.Streams) == 0 || data.Streams[0].Width == 0 || data.Streams[0].Height == 0 || data.Streams[0] == nil {
-		return errors.New("ffimage: no valid media was found")
+		return fmt.Errorf("no valid stream found")
 	}
 	i.Stream = data.Streams[0]
 	i.setWidthHeight(i.Stream.Width, i.Stream.Height)
