@@ -66,26 +66,27 @@ $ sudo apt install -y libimage-exiftool-perl
 
 ## Available Methods
 
--   `GetWidth() int`
--   `GetHeight() int`
--   `GetAspectRatio() float64`
--   `ResizeImage(w, h int, typ ...ResizeType)`
--   `ExtentImage(w, h, x, y int, pos ...PositionType)`
--   `CropImage(w, h, x, y int, pos ...PositionType)`
--   `CropThumbnailImage(w, h int)`
--   `ThumbnailImage(w, h int)`
--   `RotateImage(degree int)`
--   `FlipImage()`
--   `FlopImage()`
--   `SetBackgroundColor(color string)`
--   `SetLoop(count int)`
--   `DropFrames()`
--   `GetFrames() int`
--   `SetQuality(quality int)`
--   `SetImageFramerate(fps int)`
--   `SetImageFormat(format ImageFormat)`
--   `WriteImage(path string) error`
--   `PreserveEXIF()`
+- `GetWidth() int`
+- `GetHeight() int`
+- `GetAspectRatio() float64`
+- `ResizeImage(w, h int, typ ...ResizeType)`
+- `ExtentImage(w, h, x, y int, pos ...PositionType)`
+- `CropImage(w, h, x, y int, pos ...PositionType)`
+- `CropThumbnailImage(w, h int)`
+- `ThumbnailImage(w, h int)`
+- `RotateImage(degree int)`
+- `FlipImage()`
+- `FlopImage()`
+- `SetBackgroundColor(color string)`
+- `SetLoop(count int)`
+- `DropFrames()`
+- `GetFrames() int`
+- `SetQuality(quality int)`
+- `SetImageFramerate(fps int)`
+- `SetImageFormat(format ImageFormat)`
+- `WriteImage(path string) error`
+- `PreserveEXIF()`
+- `AddArguments(args map[string]any)`
 
 ## Previews
 
@@ -93,8 +94,8 @@ $ sudo apt install -y libimage-exiftool-perl
 
 ResizeImage scales the size of an image to the given dimensions. The other parameter will be calculated if 0 is passed as either param. If ResizeType parameter is used both width and height must be given. The image will be stretched to exact size if ResizeType was left unspecified.
 
--   ResizeTypeUpscale: Given dimensions 400x400 an image of dimensions 300x225 would be scaled up to size 533x400.
--   ResizeTypeDownscale: Given dimensions 400x400 an image of dimensions 300x225 would be scaled up to size 400x300.
+- ResizeTypeUpscale: Given dimensions 400x400 an image of dimensions 300x225 would be scaled up to size 533x400.
+- ResizeTypeDownscale: Given dimensions 400x400 an image of dimensions 300x225 would be scaled up to size 400x300.
 
 |     ![](./test/output/resize-300x300.png)     |       ![](./test/output/resize-300x.png)        | ![](./test/output/resize-x300.png) |
 | :-------------------------------------------: | :---------------------------------------------: | :--------------------------------: |
@@ -180,14 +181,24 @@ For output format as GIF, the `gifsicle` is required to be installed. The functi
 
 SetLoop sets the repeat setting for animated image (e.g. GIF, WebP).
 
--   "-1" = no loop
--   "0" = infinite
--   "1" = loop once (play 2 times)
--   "2" = loop twice (play 3 times)
--   etc
+- "-1" = no loop
+- "0" = infinite
+- "1" = loop once (play 2 times)
+- "2" = loop twice (play 3 times)
+- etc
 
 SetImageFramerate changes the fps of the image, remains unchanged if the target fps is higher than current framerates. Filesize will be reduced if lower framerate was setted.
 
 | ![](./test/output/fps-1.gif) | ![](./test/output/loop-1.gif) |
 | :--------------------------: | :---------------------------: |
 |    `SetImageFramerate(1)`    |         `SetLoop(1)`          |
+
+### AddArguments(args map[string]any)
+
+AddArguments adds custom ffmpeg arguments to the output. For example, to set `cpu-used` to 8 for faster AVIF encoding:
+
+```go
+img.AddArguments(map[string]any{
+	"cpu-used": 8,
+})
+```

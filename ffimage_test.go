@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	ffmpeg "github.com/u2takey/ffmpeg-go"
 )
 
 func newImage(a *assert.Assertions, name string) *Image {
@@ -532,4 +533,18 @@ func TestNewImageFromBytes(test *testing.T) {
 	a.NoError(err)
 	a.Equal(200, img2.GetWidth())
 	a.Equal(200, img2.GetHeight())
+}
+
+func TestAddArguments(test *testing.T) {
+	a := assert.New(test)
+	img := newImage(a, "source.png")
+
+	initialLen := len(img.Output.Args)
+	result := img.AddArguments(map[string]any{"cpu-used": 8})
+
+	a.Equal(img, result)
+	a.Equal(initialLen+1, len(img.Output.Args))
+
+	lastArg := img.Output.Args[len(img.Output.Args)-1]
+	a.Equal(ffmpeg.KwArgs{"cpu-used": 8}, lastArg)
 }

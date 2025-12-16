@@ -173,6 +173,14 @@ func (i *Image) DropFrames() *Image {
 	return i
 }
 
+// AddArguments adds custom ffmpeg arguments to the output.
+func (i *Image) AddArguments(args map[string]any) *Image {
+	for k, v := range args {
+		i.addArg(ffmpeg.KwArgs{k: v})
+	}
+	return i
+}
+
 // SetImageFormat sets the output format and automatically decides the codec. Format will be detect automatically from the output filename if it wasn't been setted.
 func (i *Image) SetImageFormat(format ImageFormat) *Image {
 	switch format {
