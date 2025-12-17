@@ -263,7 +263,38 @@ func (i *Image) WriteImage(path string) error {
 	}
 
 	buf := bytes.NewBuffer(nil)
-	err := input.Output(path, i.Output.Args...).OverWriteOutput().Silent(i.Silent).WithErrorOutput(buf).Run()
+	var err error
+
+	// Use filter chain to preserve transparency for AVIF format.
+	if i.Output.Format == ImageFormatAVIF {
+		// Split the input into two streams for RGB and Alpha processing
+		split := input.Split()
+		rgb, a := split.Get("0"), split.Get("1")
+
+		// Extract alpha channel from the second stream
+		alpha := a.Filter("alphaextract", ffmpeg.Args{})
+
+		// Convert RGB to yuv420p
+		// NOTE: yuva420p brokes for some jpegs from og:image, use rgba temporarily
+		color := rgb.Filter("format", ffmpeg.Args{"rgba"})
+
+		// Merge color and alpha
+		merged := ffmpeg.Filter([]*ffmpeg.Stream{color, alpha}, "alphamerge", ffmpeg.Args{})
+		merged = merged.Filter("format", ffmpeg.Args{"yuva420p"})
+
+		// Split again for output
+		split2 := merged.Split()
+		out1, out2 := split2.Get("0"), split2.Get("1")
+
+		// Extract alpha from second output
+		outAlpha := out2.Filter("alphaextract", ffmpeg.Args{})
+
+		// Output with both streams
+		err = ffmpeg.Output([]*ffmpeg.Stream{out1, outAlpha}, path, i.Output.Args...).OverWriteOutput().Silent(i.Silent).WithErrorOutput(buf).Run()
+	} else {
+		err = input.Output(path, i.Output.Args...).OverWriteOutput().Silent(i.Silent).WithErrorOutput(buf).Run()
+	}
+
 	if err != nil {
 		return fmt.Errorf("ffmpeg output: %s", buf.String())
 	}

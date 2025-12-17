@@ -513,6 +513,72 @@ func TestGIFConvertion(test *testing.T) {
 	a.Equal(96, img.GetHeight())
 }
 
+func TestJPGConvertion(test *testing.T) {
+	a := assert.New(test)
+	img, output := newImage(a, "source.jpg"), newOutput("jpg-to-png.png")
+	err := img.SetImageFormat(ImageFormatPNG).WriteImage(output)
+	a.NoError(err)
+
+	img, output = newImage(a, "source.jpg"), newOutput("jpg-to-gif.gif")
+	err = img.SetImageFormat(ImageFormatGIF).WriteImage(output)
+	a.NoError(err)
+
+	img, output = newImage(a, "source.jpg"), newOutput("jpg-to-bmp.bmp")
+	err = img.SetImageFormat(ImageFormatBMP).WriteImage(output)
+	a.NoError(err)
+
+	img, output = newImage(a, "source.jpg"), newOutput("jpg-to-avif.avif")
+	err = img.SetImageFormat(ImageFormatAVIF).WriteImage(output)
+	a.NoError(err)
+
+	img, output = newImage(a, "source.jpg"), newOutput("jpg-to-webp.webp")
+	err = img.SetImageFormat(ImageFormatWEBP).WriteImage(output)
+	a.NoError(err)
+
+	img, output = newImage(a, "source.jpg"), newOutput("jpg-to-apng.apng")
+	err = img.SetImageFormat(ImageFormatAPNG).WriteImage(output)
+	a.NoError(err)
+
+	img, err = NewImage(output)
+	a.NoError(err)
+
+	a.Equal(4080, img.GetWidth())
+	a.Equal(3072, img.GetHeight())
+}
+
+func TestWEBPConvertion(test *testing.T) {
+	a := assert.New(test)
+	img, output := newImage(a, "source.webp"), newOutput("webp-to-jpg.jpg")
+	err := img.SetImageFormat(ImageFormatJPEG).WriteImage(output)
+	a.NoError(err)
+
+	img, output = newImage(a, "source.webp"), newOutput("webp-to-png.png")
+	err = img.SetImageFormat(ImageFormatPNG).WriteImage(output)
+	a.NoError(err)
+
+	img, output = newImage(a, "source.webp"), newOutput("webp-to-gif.gif")
+	err = img.SetImageFormat(ImageFormatGIF).WriteImage(output)
+	a.NoError(err)
+
+	img, output = newImage(a, "source.webp"), newOutput("webp-to-bmp.bmp")
+	err = img.SetImageFormat(ImageFormatBMP).WriteImage(output)
+	a.NoError(err)
+
+	img, output = newImage(a, "source.webp"), newOutput("webp-to-avif.avif")
+	err = img.SetImageFormat(ImageFormatAVIF).WriteImage(output)
+	a.NoError(err)
+
+	img, output = newImage(a, "source.webp"), newOutput("webp-to-apng.apng")
+	err = img.SetImageFormat(ImageFormatAPNG).WriteImage(output)
+	a.NoError(err)
+
+	img, err = NewImage(output)
+	a.NoError(err)
+
+	a.Equal(225, img.GetWidth())
+	a.Equal(128, img.GetHeight())
+}
+
 func TestNewImageFromBytes(test *testing.T) {
 	a := assert.New(test)
 
