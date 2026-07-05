@@ -163,12 +163,14 @@ func (i *Image) SetImageFramerate(fps int) *Image {
 	// r_frame_rate=30/1
 	// avg_frame_rate=438750/14777
 	// i.addFilter("fps", ffmpeg.Args{fmt.Sprintf("%d", fps)})
+	i.Output.Framerate = true
 	i.addArg(ffmpeg.KwArgs{"r": fmt.Sprintf("%d", fps)})
 	return i
 }
 
-// DropFrames makes any animated images to static image by specifing `-vframes 1`.
+// DropFrames makes any animated images to static image by specifying `-vframes 1`.
 func (i *Image) DropFrames() *Image {
+	i.Output.DropFrames = true
 	i.addArg(ffmpeg.KwArgs{"vframes": 1})
 	return i
 }
@@ -289,8 +291,19 @@ func (i *Image) WriteImage(path string) error {
 		// Extract alpha from second output
 		outAlpha := out2.Filter("alphaextract", ffmpeg.Args{})
 
+		outputArgs := append([]ffmpeg.KwArgs{}, i.Output.Args...)
+		if i.Output.DropFrames {
+			outputArgs = append(outputArgs,
+				ffmpeg.KwArgs{"frames:v:0": 1},
+				ffmpeg.KwArgs{"frames:v:1": 1},
+				ffmpeg.KwArgs{"still-picture": 1},
+			)
+		} else if !i.Output.Framerate {
+			outputArgs = append(outputArgs, ffmpeg.KwArgs{"fps_mode": "passthrough"})
+		}
+
 		// Output with both streams
-		err = ffmpeg.Output([]*ffmpeg.Stream{out1, outAlpha}, path, i.Output.Args...).OverWriteOutput().Silent(i.Silent).WithErrorOutput(buf).Run()
+		err = ffmpeg.Output([]*ffmpeg.Stream{out1, outAlpha}, path, outputArgs...).OverWriteOutput().Silent(i.Silent).WithErrorOutput(buf).Run()
 	} else {
 		err = input.Output(path, i.Output.Args...).OverWriteOutput().Silent(i.Silent).WithErrorOutput(buf).Run()
 	}

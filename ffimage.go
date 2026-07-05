@@ -78,6 +78,8 @@ type Output struct {
 	Quality         int
 	Format          ImageFormat
 	Loop            int
+	DropFrames      bool
+	Framerate       bool
 	IsPreserved     bool
 	EXIF            string
 	Codec           string
